@@ -1,57 +1,59 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Stack, useRouter } from 'expo-router'
+import { useEffect } from 'react'
+import * as SplashScreen from 'expo-splash-screen'
+import * as Notifications from 'expo-notifications'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import 'react-native-reanimated'
+import { StoreProvider } from '@/store'
+import { setupAndroidChannel } from '@/utils/notifications'
 
-import { useColorScheme } from '@/components/useColorScheme';
+SplashScreen.preventAutoHideAsync()
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+})
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+export { ErrorBoundary } from 'expo-router'
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+    setupAndroidChannel()
+    SplashScreen.hideAsync()
+  }, [])
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
-  );
+    <SafeAreaProvider>
+      <StoreProvider>
+        <RootStack />
+      </StoreProvider>
+    </SafeAreaProvider>
+  )
+}
+
+function RootStack() {
+  const router = useRouter()
+  const lastResponse = Notifications.useLastNotificationResponse()
+
+  useEffect(() => {
+    if (lastResponse) {
+      const { slotMinute, firedAt } = lastResponse.notification.request.content.data ?? {}
+      if (typeof slotMinute === 'number' && typeof firedAt === 'number') {
+        router.push(`/confirm?slotMinute=${slotMinute}&firedAt=${firedAt}`)
+      }
+    }
+  }, [lastResponse])
+
+  return (
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F1EFE8' } }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="onboarding" />
+      <Stack.Screen name="confirm" />
+      <Stack.Screen name="celebration" />
+      <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
+    </Stack>
+  )
 }
