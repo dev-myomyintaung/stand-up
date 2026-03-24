@@ -1,13 +1,13 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native'
-import { useRouter } from 'expo-router'
-import { useEffect } from 'react'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, space } from '@/constants/tokens'
-import { useStore } from '@/store'
 import { ProgressRing } from '@/components/ProgressRing'
 import { WeekGrid } from '@/components/WeekGrid'
-import { getSlots, getCurrentConfirmSlot, formatSlotMinute } from '@/utils/slots'
+import { colors, space } from '@/constants/tokens'
+import { useStore } from '@/store'
+import { getCurrentConfirmSlot, getSlots } from '@/utils/slots'
 import * as Notifications from 'expo-notifications'
+import { useRouter } from 'expo-router'
+import { useEffect } from 'react'
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 function formatHour(h: number) {
   if (h === 0) return '12am'
@@ -19,7 +19,15 @@ function formatHour(h: number) {
 export default function HomeScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { loaded, onboarded, streak, standsLog, activeStart, activeEnd, interval, lastStreakDate } = useStore()
+  const store = useStore()
+  const loaded = store?.loaded ?? false
+  const onboarded = store?.onboarded ?? false
+  const streak = store?.streak ?? 0
+  const standsLog = store?.standsLog ?? {}
+  const activeStart = store?.activeStart ?? 9
+  const activeEnd = store?.activeEnd ?? 18
+  const interval = store?.interval ?? 60
+  const lastStreakDate = store?.lastStreakDate ?? null
 
   useEffect(() => {
     if (loaded && !onboarded) {
@@ -94,7 +102,11 @@ export default function HomeScreen() {
                 body: 'Tap to confirm →',
                 data: { slotMinute, firedAt },
               },
-              trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 3 },
+              trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                seconds: 3,
+                ...Platform.OS === 'android' && { channelId: 'standup' }
+              },
             })
           }}
         >

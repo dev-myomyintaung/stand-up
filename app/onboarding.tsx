@@ -9,7 +9,11 @@ import { isMiui, showMiuiGuide } from '@/utils/deviceCompat'
 export default function OnboardingScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { completeOnboarding, activeStart, activeEnd, interval } = useStore()
+  const store = useStore()
+  const completeOnboarding = store?.completeOnboarding ?? (async () => {})
+  const activeStart = store?.activeStart ?? 9
+  const activeEnd = store?.activeEnd ?? 18
+  const interval = store?.interval ?? 60
 
   async function handleAllow() {
     await requestPermission()

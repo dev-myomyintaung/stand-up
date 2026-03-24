@@ -6,7 +6,7 @@ export async function setupAndroidChannel() {
   if (Platform.OS !== 'android') return
   await Notifications.setNotificationChannelAsync('standup', {
     name: 'Stand reminders',
-    importance: Notifications.AndroidImportance.HIGH,
+    importance: Notifications.AndroidImportance.MAX,
     vibrationPattern: [0, 250],
     lightColor: '#EF9F27',
   })

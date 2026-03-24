@@ -128,8 +128,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useStore(): Store {
-  const ctx = useContext(StoreContext)
-  if (!ctx) throw new Error('useStore must be used within StoreProvider')
-  return ctx
+export function useStore(): Store | null {
+  return useContext(StoreContext)
 }

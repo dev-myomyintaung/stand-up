@@ -14,17 +14,19 @@ export default function ConfirmScreen() {
   }>()
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { confirmStand, standsLog } = useStore()
+  const store = useStore()
+  const confirmStand = store?.confirmStand
+  const standsLog = store?.standsLog
 
   const slotMinute = parseInt(slotParam ?? '0')
   const firedAt = parseInt(firedAtParam ?? '0')
   const isExpired = !firedAtParam || Date.now() > firedAt + CONFIRM_WINDOW_MS
 
   const today = new Date().toISOString().split('T')[0]
-  const prevConfirmed = standsLog[today]?.length ?? 0
+  const prevConfirmed = standsLog?.[today]?.length ?? 0
 
   async function handleConfirm() {
-    await confirmStand(slotMinute)
+    await confirmStand?.(slotMinute)
     router.replace(`/celebration?prev=${prevConfirmed}`)
   }
 

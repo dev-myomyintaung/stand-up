@@ -48,7 +48,14 @@ function HourRow({ label, value, onDecrement, onIncrement }: {
 export default function SettingsScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { activeStart, activeEnd, interval, setActiveWindow, setInterval, resetStreak, streak } = useStore()
+  const store = useStore()
+  const activeStart = store?.activeStart ?? 9
+  const activeEnd = store?.activeEnd ?? 18
+  const interval = store?.interval ?? 60
+  const setActiveWindow = store?.setActiveWindow ?? (async () => {})
+  const setInterval = store?.setInterval ?? (async () => {})
+  const resetStreak = store?.resetStreak ?? (async () => {})
+  const streak = store?.streak ?? 0
   const [notificationsOn, setNotificationsOn] = useState(true)
 
   async function reschedule(start = activeStart, end = activeEnd, mins = interval) {

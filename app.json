@@ -14,7 +14,8 @@
       "backgroundColor": "#F1EFE8"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.myomyintaung.developer.StandUp"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +24,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.myomyintaung.developer.StandUp"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +44,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e8241e12-5d94-409e-ae7e-863a85e6e05d"
+      }
     }
   }
 }

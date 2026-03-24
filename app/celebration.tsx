@@ -16,7 +16,11 @@ export default function CelebrationScreen() {
   const { prev: prevParam } = useLocalSearchParams<{ prev: string }>()
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { streak, standsLog, activeStart, activeEnd } = useStore()
+  const store = useStore()
+  const streak = store?.streak ?? 0
+  const standsLog = store?.standsLog ?? {}
+  const activeStart = store?.activeStart ?? 9
+  const activeEnd = store?.activeEnd ?? 18
 
   const scale = useSharedValue(0)
 
